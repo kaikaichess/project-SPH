@@ -1,8 +1,10 @@
 <template>
   <div>
     <HeaderIndex/>
-    <h1>根组件</h1>
-    <FooterIndex/>
+    <!-- 路由组件出口 -->
+    <router-view></router-view>
+    <!-- 在Home和Search下显示，在Login和Regi下隐藏 -->
+    <FooterIndex v-show="$route.meta.show"/>
   </div>
 </template>
 
