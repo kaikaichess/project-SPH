@@ -1,7 +1,33 @@
 <template>
     <div class="type-nav">
         <div class="container">
-            <h2 class="all">全部商品分类</h2>
+            <div @mouseleave="leaveIndex">
+                <h2 class="all">全部商品分类</h2>
+                <!-- 三级联动 -->
+                <div class="sort">
+                    <div class="all-sort-list2" @click="goSearch">
+                        <div class="item" v-for="(c1, index) in categoryList" :key="c1.categoryId" :class="{cur: currentIndex === index}">
+                            <h3 @mouseenter="changeIndex(index)">
+                                <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{c1.categoryName}}</a>
+                            </h3>
+                            <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
+                                <div class="subitem" v-for="(c2) in c1.categoryChild" :key="c2.categoryId">
+                                    <dl class="fore">
+                                        <dt>
+                                            <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{c2.categoryName}}</a>
+                                        </dt>
+                                        <dd>
+                                            <em v-for="(c3) in c2.categoryChild" :key="c3.categoryId">
+                                                <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{c3.categoryName}}</a>
+                                            </em>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <nav class="nav">
                 <a href="###">服装城</a>
                 <a href="###">美妆馆</a>
@@ -12,47 +38,78 @@
                 <a href="###">有趣</a>
                 <a href="###">秒杀</a>
             </nav>
-            <div class="sort">
-                <div class="all-sort-list2">
-                    <div class="item" v-for="(c1) in categoryList" :key="c1.categoryId">
-                        <h3>
-                            <a href="">{{c1.categoryName}}</a>
-                        </h3>
-                        <div class="item-list clearfix">
-                            <div class="subitem" v-for="(c2) in c1.categoryChild" :key="c2.categoryId">
-                                <dl class="fore">
-                                    <dt>
-                                        <a href="">{{c2.categoryName}}</a>
-                                    </dt>
-                                    <dd>
-                                        <em v-for="(c3) in c2.categoryChild" :key="c3.categoryId">
-                                            <a href="">{{c3.categoryName}}</a>
-                                        </em>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </template>
 
 <script>
     import {mapState} from 'vuex'
+    // 按需引入lodash中的节流函数
+    import throttle from 'lodash/throttle.js'
     export default {
         name: 'TypeNavIndex',
-        // 组件挂载完毕即可向服务器发送请求
-        mounted() {
-            // 通知Vuex发送请求，获取数据，存储在仓库中
-            this.$store.dispatch('categoryList')
+        data() {
+            return {
+                // 存储用户鼠标所在的一级分类的index
+                currentIndex: -1 // 使一开始不选中任何一个一级分类【一级分类范围为0~16】
+            }
         },
         computed: {
             ...mapState({
                 categoryList: state => state.home.categoryList
             })
-        }
+        },
+        methods: {
+            // 鼠标进入，修改响应式数据currentIndex
+            // changeIndex(index) {
+            //     this.currentIndex = index
+            // },
+
+            // 对changeIndex函数进行节流
+            // 注意这里不要用箭头函数，防止出现this指向问题
+            changeIndex: throttle(function(index) {
+                this.currentIndex = index
+            }, 50),
+
+            // 鼠标离开的事件回调
+            leaveIndex() {
+                this.currentIndex = -1
+            },
+            // 进行路由跳转的方法（编程式导航+事件委派）
+            goSearch(event) {
+                // 给a子节点添加data-categoryName自定义属性，以便判断点击的是不是a标签，添加data-categoryId自定义属性来判断是几级分类
+                // 获取点击对象
+                let element = event.target
+                // dataset可以获取元素的自定义属性，其值为一个对象，通过解构赋值获取categoryname(模板解析后会变成小写)等自定义属性
+                let {categoryname, category1id, category2id, category3id} = element.dataset
+                // 判断是否是a标签
+                if(categoryname) {
+                    // 整理路由跳转的参数
+                    let location = {name: 'search'}
+                    let query = {categoryName: categoryname}
+                    if(category1id) {
+                        // 判断是否是一级分类
+                        query.category1Id = category1id
+                    } else if(category2id) {
+                        // 判断是否是二级分类
+                        query.category2Id = category2id
+                    } else {
+                        // 判断是否是三级分类
+                        query.category3Id = category3id
+                    }
+                    // 整理参数
+                    location.query = query
+                    // 路由跳转
+                    this.$router.push(location)
+                }
+            }
+        },
+        // 组件挂载完毕即可向服务器发送请求
+        mounted() {
+            // 通知Vuex发送请求，获取数据，存储在仓库中
+            this.$store.dispatch('categoryList')
+        },
     }
 </script>
 
@@ -167,10 +224,13 @@
                         }
 
                         &:hover {
-                            .item-list {
-                                display: block;
-                            }
+                            // .item-list {
+                            //     display: block;
+                            // }
                         }
+                    }
+                    .cur {
+                        background-color: skyblue;
                     }
                 }
             }
