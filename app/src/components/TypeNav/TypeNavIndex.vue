@@ -1,32 +1,35 @@
 <template>
     <div class="type-nav">
         <div class="container">
-            <div @mouseleave="leaveIndex">
+            <div @mouseleave="leaveShow" @mouseenter="enterShow">
                 <h2 class="all">全部商品分类</h2>
                 <!-- 三级联动 -->
-                <div class="sort">
-                    <div class="all-sort-list2" @click="goSearch">
-                        <div class="item" v-for="(c1, index) in categoryList" :key="c1.categoryId" :class="{cur: currentIndex === index}">
-                            <h3 @mouseenter="changeIndex(index)">
-                                <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{c1.categoryName}}</a>
-                            </h3>
-                            <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
-                                <div class="subitem" v-for="(c2) in c1.categoryChild" :key="c2.categoryId">
-                                    <dl class="fore">
-                                        <dt>
-                                            <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{c2.categoryName}}</a>
-                                        </dt>
-                                        <dd>
-                                            <em v-for="(c3) in c2.categoryChild" :key="c3.categoryId">
-                                                <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{c3.categoryName}}</a>
-                                            </em>
-                                        </dd>
-                                    </dl>
+                <!-- 过渡动画 -->
+                <transition name="sort">
+                    <div class="sort" v-show="show">
+                        <div class="all-sort-list2" @click="goSearch">
+                            <div class="item" v-for="(c1, index) in categoryList" :key="c1.categoryId" :class="{cur: currentIndex === index}">
+                                <h3 @mouseenter="changeIndex(index)">
+                                    <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{c1.categoryName}}</a>
+                                </h3>
+                                <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
+                                    <div class="subitem" v-for="(c2) in c1.categoryChild" :key="c2.categoryId">
+                                        <dl class="fore">
+                                            <dt>
+                                                <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{c2.categoryName}}</a>
+                                            </dt>
+                                            <dd>
+                                                <em v-for="(c3) in c2.categoryChild" :key="c3.categoryId">
+                                                    <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{c3.categoryName}}</a>
+                                                </em>
+                                            </dd>
+                                        </dl>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </transition>
             </div>
             <nav class="nav">
                 <a href="###">服装城</a>
@@ -52,7 +55,9 @@
         data() {
             return {
                 // 存储用户鼠标所在的一级分类的index
-                currentIndex: -1 // 使一开始不选中任何一个一级分类【一级分类范围为0~16】
+                currentIndex: -1, // 使一开始不选中任何一个一级分类【一级分类范围为0~16】
+                // 控制商品分类的显示与隐藏
+                show: true
             }
         },
         computed: {
@@ -73,8 +78,12 @@
             }, 50),
 
             // 鼠标离开的事件回调
-            leaveIndex() {
+            leaveShow() {
                 this.currentIndex = -1
+                // 如果当前不是在home路由下，则鼠标离开商品分类，三级联动隐藏
+                if(this.$route.path != '/home') {
+                    this.show = false
+                }
             },
             // 进行路由跳转的方法（编程式导航+事件委派）
             goSearch(event) {
@@ -98,17 +107,27 @@
                         // 判断是否是三级分类
                         query.category3Id = category3id
                     }
+                    // 如果路由跳转的时候带有params参数也要带上一起跳转
+                    if(this.$route.params) {
+                        location.params = this.$route.params
+                    }
                     // 整理参数
                     location.query = query
                     // 路由跳转
                     this.$router.push(location)
                 }
+            },
+            // 鼠标移动到商品分类上，三级联动出现
+            enterShow() {
+                this.show = true
             }
         },
         // 组件挂载完毕即可向服务器发送请求
         mounted() {
-            // 通知Vuex发送请求，获取数据，存储在仓库中
-            this.$store.dispatch('categoryList')
+            // 当组件挂载完毕时，如果不是home路由，就将商品分类初始值设为隐藏
+            if(this.$route.path != '/home') {
+                this.show = false
+            }
         },
     }
 </script>
@@ -233,6 +252,25 @@
                         background-color: skyblue;
                     }
                 }
+            }
+
+            // 过渡动画的样式
+            // 过渡动画开始（进入）
+            .sort-enter, 
+            .sort-leave-to {
+                height: 0;
+                overflow: hidden;
+            }
+            // 过渡动画结束（进入）
+            .sort-enter-to,
+            .sort-leave {
+                height: 461px;
+                overflow: hidden;
+            }
+            // 定义过渡动画的时间、速率（进入）
+            .sort-enter-active, 
+            .sort-leave-active {
+                transition: all .15s linear;
             }
         }
     }

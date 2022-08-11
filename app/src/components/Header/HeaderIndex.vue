@@ -67,11 +67,14 @@
                 // 路由传参(params方法，query方法,模板字符串形式)
                 // this.$router.push(`/search/${this.keyWord}?keyWord=${this.keyWord.toUpperCase()}`)
                 // 路由传参(params方法，query方法,对象形式,最常用)，注意对象写法时parmas传参要配置name，不能通过path传参
-                this.$router.push({
+                let location =  {
                     name: 'search',
                     params: {keyWord: this.keyWord},
-                    query: {keyWord: this.keyWord.toUpperCase()}
-                })
+                }
+                if(this.$route.query) {
+                    location.query = this.$route.query
+                }
+                this.$router.push(location)
             }
         }
     }

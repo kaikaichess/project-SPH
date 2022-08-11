@@ -6,12 +6,19 @@ import TypeNavIndex from './components/TypeNav/TypeNavIndex'
 // 第一个参数是这个全局组件的名字，第二个参数是要注册的组件
 Vue.component(TypeNavIndex.name, TypeNavIndex)
 
-// 测试请求数据
-import {reqCategoryList} from './api/index'
-reqCategoryList()
+// 将轮播图组件注册为全局组件
+import CarouselIndex from './components/Carousel/CarouselIndex'
+// 第一个参数是这个全局组件的名字，第二个参数是要注册的组件
+Vue.component(CarouselIndex.name, CarouselIndex)
 
 // 引入vuex仓库store
 import store from './store/index'
+
+// 引入mockServe.js
+import '../src/mock/mockServe.js'
+
+// 引入swiper样式
+import 'swiper/css/swiper.css';
 
 Vue.config.productionTip = false
 

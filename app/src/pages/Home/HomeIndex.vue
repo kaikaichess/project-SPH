@@ -11,8 +11,7 @@
         <!-- 猜你喜欢 -->
         <LikeIndex/>
         <!-- 楼层 -->
-        <FloorIndex/>
-        <FloorIndex/>
+        <FloorIndex v-for="item in floor" :key="item.id" :floor="item"/>
         <!-- 商标 -->
         <BrandIndex/>
     </div>
@@ -25,9 +24,16 @@
     import LikeIndex from './Like/LikeIndex.vue'
     import FloorIndex from './Floor/FloorIndex.vue'
     import BrandIndex from './Brand/BrandIndex.vue'
+    import { mapState } from 'vuex'
     export default {
         name: "HomeIndex",
-        components: { ListContainerIndex, RecommendIndex, RankIndex, LikeIndex, FloorIndex, BrandIndex }
+        components: { ListContainerIndex, RecommendIndex, RankIndex, LikeIndex, FloorIndex, BrandIndex },
+        computed: {
+            ...mapState({floor: state => state.home.floor})
+        },
+        mounted() {
+            this.$store.dispatch('getFloorList')
+        }
     }
 </script>
 
