@@ -2,15 +2,10 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import routes from './routes'
 
 // 使用插件
 Vue.use(VueRouter)
-
-// 引入路由组件
-import HomeIndex from '../pages/Home/HomeIndex'
-import LoginIndex from '../pages/Login/LoginIndex'
-import SearchIndex from '../pages/Search/SearchIndex'
-import RegisterIndex from '../pages//Register/RegisterIndex'
 
 // 先把VueRouter.prototype上的push和replace方法保存一份,因为最后实现跳转还是要靠原本的push和replace方法
 // 注意：push和replace方法原来的上下文是VueRouter的实例对象，所以在调用originPush时也要保证这一点
@@ -38,33 +33,10 @@ VueRouter.prototype.replace = function(location, resolve, reject) {
 
 // 配置路由
 export default new VueRouter({
-    routes: [
-        {
-            path: '/home',
-            component: HomeIndex,
-            meta: {show: true}
-        },
-        {
-            path: '/login',
-            component: LoginIndex,
-            meta: {show: false}
-        },
-        {
-            name: 'search',
-            path: '/search/:keyWord?',
-            component: SearchIndex,
-            meta: {show: true}
-        },
-        {
-            path: '/register',
-            component: RegisterIndex,
-            meta: {show: false}
-        },
-        // 重定向，在项目跑起来的时候，访问/，立马定向到主页
-        {
-            path: '/',
-            redirect: '/home'
-        }
-
-    ]
+    routes,
+    // 滚动行为
+    scrollBehavior() {
+        // y:0代表路由跳转之后，滚动条在最上方
+        return {y: 0}
+    }
 })

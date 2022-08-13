@@ -256,20 +256,20 @@
 
             // 过渡动画的样式
             // 过渡动画开始（进入）
-            .sort-enter, 
-            .sort-leave-to {
+            .sort-enter
+            {
                 height: 0;
                 overflow: hidden;
             }
             // 过渡动画结束（进入）
-            .sort-enter-to,
-            .sort-leave {
+            .sort-enter-to
+            {
                 height: 461px;
                 overflow: hidden;
             }
             // 定义过渡动画的时间、速率（进入）
-            .sort-enter-active, 
-            .sort-leave-active {
+            .sort-enter-active
+            {
                 transition: all .15s linear;
             }
         }

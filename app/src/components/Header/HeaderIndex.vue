@@ -36,7 +36,7 @@
                         type="text" 
                         id="autocomplete" 
                         class="input-error input-xxlarge" 
-                        v-model="keyWord"
+                        v-model="keyword"
                     />
                     <button 
                         class="sui-btn btn-xlarge btn-danger" 
@@ -56,27 +56,33 @@
         name: 'HeaderIndex',
         data() {
             return {
-                keyWord: ''
+                keyword: ''
             }
         },
         methods: {
             // 搜索按钮的回调函数，向/search进行跳转
             goSearch() {
                 // 路由传参(params方法，query方法,字符串形式)
-                // this.$router.push('/search/' + this.keyWord + '?keyWord=' + this.keyWord.toUpperCase())
+                // this.$router.push('/search/' + this.keyword + '?keyword=' + this.keyword.toUpperCase())
                 // 路由传参(params方法，query方法,模板字符串形式)
-                // this.$router.push(`/search/${this.keyWord}?keyWord=${this.keyWord.toUpperCase()}`)
+                // this.$router.push(`/search/${this.keyword}?keyword=${this.keyword.toUpperCase()}`)
                 // 路由传参(params方法，query方法,对象形式,最常用)，注意对象写法时parmas传参要配置name，不能通过path传参
                 let location =  {
                     name: 'search',
-                    params: {keyWord: this.keyWord},
+                    params: {keyword: this.keyword},
                 }
                 if(this.$route.query) {
                     location.query = this.$route.query
                 }
                 this.$router.push(location)
             }
-        }
+        },
+        mounted() {
+            // 通过全局事件总线清除关键字
+            this.$bus.$on('clear', () => {
+                this.keyword = ''
+            })
+        },
     }
 </script>
 
