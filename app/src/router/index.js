@@ -2,7 +2,8 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import routes from './routes'
+import routes from '../router/routes'
+import store from '../store/index'
 
 // 使用插件
 Vue.use(VueRouter)
@@ -32,7 +33,7 @@ VueRouter.prototype.replace = function(location, resolve, reject) {
 }
 
 // 配置路由
-export default new VueRouter({
+let router = new VueRouter({
     routes,
     // 滚动行为
     scrollBehavior() {
@@ -40,3 +41,40 @@ export default new VueRouter({
         return {y: 0}
     }
 })
+
+// 全局前置守卫
+router.beforeEach(async (to, from, next) => {
+    let token = store.state.user.token
+    // 用户信息，注意不能直接判断userInfo因为userInfo最少是一个空对象，空对象也是true
+    let name = store.state.user.userInfo.name
+    if(token) {
+        // 用户已经登录了就不能再去登录页面了
+        if(to.path == '/login') {
+            next('/home')
+        } else {
+            // 用户登陆了但是去的不是login
+            // 如果已有用户信息
+            if(name) {
+                next()
+            } else {
+                // 没有用户信息，派发action获取用户信息后再跳转
+                try {
+                    // 获取用户信息成功
+                    await store.dispatch('getUserInfo')
+                    next()
+                } catch (error) {
+                    // token失效了，清除token
+                    await store.dispatch('userlogout')
+                    // 回到登录页面重新登录
+                    next('/login')
+                }
+            }
+            
+        }
+    } else {
+        // 未登录
+        next()
+    }
+})
+
+export default router

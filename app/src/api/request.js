@@ -1,3 +1,5 @@
+import store from '../store/index'
+
 // 对于axios进行二次封装
 
 import axios from 'axios'
@@ -19,8 +21,17 @@ const requests = axios.create({
 
 // 请求拦截器：在发请求之前，请求拦截器可以监测到，可以在请求发出去之前做一些事
 requests.interceptors.request.use((config) => {
+    // 如果仓库中存在uuid
+    if(store.state.detail.uuid_token) {
+        // 给请求头添加一个字段，这个字段是和后台数据所约定好的(不能瞎写)，把uuid带给服务器
+        config.headers.userTempId = store.state.detail.uuid_token
+    }
     // 进度条开始加载
     nprogress.start()
+    // 需要携带token给服务器
+    if(store.state.user.token) {
+        config.headers.token = store.state.user.token
+    }
     // config是一个配置对象，其中有一个header(请求头)属性很重要
     return config
 })

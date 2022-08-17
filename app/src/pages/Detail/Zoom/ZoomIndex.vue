@@ -1,17 +1,53 @@
 <template>
   <div class="spec-preview">
-    <img src="../images/s1.png" />
-    <div class="event"></div>
+    <img :src="imgObj.imgUrl" />
+    <div class="event" @mousemove="handler"></div>
     <div class="big">
-      <img src="../images/s1.png" />
+      <img :src="imgObj.imgUrl" ref="bigImg" />
     </div>
-    <div class="mask"></div>
+    <!-- 遮罩层 -->
+    <div class="mask" ref="mask"></div>
   </div>
 </template>
 
 <script>
   export default {
     name: "ZoomIndex",
+    props: ['skuImageList'],
+    data() {
+      return {
+        currentIndex: 0
+      }
+    },
+    computed: {
+      imgObj() {
+        // 防止出现skuImageList[0]是undefined的问题
+        return this.skuImageList[this.currentIndex] || {}
+      },
+    },
+    methods: {
+      handler(event) {
+        // 处理放大镜
+        let mask  = this.$refs.mask
+        let left = event.offsetX - mask.offsetWidth/2
+        let top = event.offsetY - mask.offsetHeight/2
+        if(left <= 0) left = 0
+        if(left > mask.offsetWidth) left = mask.offsetWidth
+        if(top <= 0) top = 0
+        if(top > mask.offsetHeight) top = mask.offsetHeight
+        mask.style.left = left + 'px'
+        mask.style.top = top + 'px'
+        // 处理大图片(注意大图是放大了两倍，并且大图和遮罩移动的方向相反，所以要乘-2)
+        let bigImg = this.$refs.bigImg
+        bigImg.style.left = left * -2 + 'px'
+        bigImg.style.top = top * -2 + 'px'
+      }
+    },
+    mounted() {
+      this.$bus.$on('getIndex', index => {
+        this.currentIndex = index
+      })
+    }
   }
 </script>
 

@@ -1,8 +1,8 @@
 <template>
   <div class="swiper-container">
     <div class="swiper-wrapper">
-      <div class="swiper-slide">
-        <img src="../images/s1.png">
+      <div class="swiper-slide" v-for="(img, index) in skuImageList" :key="img.id">
+        <img :src="img.imgUrl" @click="changeActive(index)" :class="{active: currentIndex === index}">
       </div>
     </div>
     <div class="swiper-button-next"></div>
@@ -12,9 +12,38 @@
 
 <script>
 
-  // import Swiper from 'swiper'
+  import Swiper from 'swiper'
   export default {
     name: "ImageList",
+    props: ['skuImageList'],
+    data() {
+      return {
+        currentIndex: 0
+      }
+    },
+    watch: {
+      skuImageList() {
+        this.$nextTick(() => {
+          new Swiper ('.swiper-container', {
+            // 如果需要前进后退按钮
+            navigation: {
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            },
+            slidesPerView : 3,
+            slidesPerGroup : 1,
+          })        
+        })
+      }
+    },
+    methods: {
+      //点击图片的回调
+      changeActive(index) {
+        this.currentIndex = index
+        // 将index传递给ZoomIndex组件，让其同时切换图片
+        this.$bus.$emit('getIndex', index)
+      }
+    }
   }
 </script>
 

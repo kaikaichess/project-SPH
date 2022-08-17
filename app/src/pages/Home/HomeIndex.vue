@@ -32,6 +32,7 @@
             ...mapState({floor: state => state.home.floor})
         },
         mounted() {
+            // 派发action，获取floor组件信息
             this.$store.dispatch('getFloorList')
         }
     }
