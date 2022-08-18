@@ -7,8 +7,8 @@
           <span class="success-info">订单提交成功，请您及时付款，以便尽快为您发货~~</span>
         </h4>
         <div class="paymark">
-          <span class="fl">请您在提交订单<em class="orange time">4小时</em>之内完成支付，超时订单会自动取消。订单号：<em>145687</em></span>
-          <span class="fr"><em class="lead">应付金额：</em><em class="orange money">￥17,654</em></span>
+          <span class="fl">请您在提交订单<em class="orange time">4小时</em>之内完成支付，超时订单会自动取消。订单号：<em>{{orderId}}</em></span>
+          <span class="fr"><em class="lead">应付金额：</em><em class="orange money">￥{{payInfo.totalFee}}</em></span>
         </div>
       </div>
       <div class="checkout-info">
@@ -65,7 +65,9 @@
         <div class="hr"></div>
 
         <div class="submit">
-          <router-link class="btn" to="/paysuccess">立即支付</router-link>
+          <!-- <router-link class="btn" to="/paysuccess">立即支付</router-link> -->
+          <a class="btn" @click="open">立即支付</a>
+
         </div>
         <div class="otherpay">
           <div class="step-tit">
@@ -82,8 +84,95 @@
 </template>
 
 <script>
+  import QRCode from 'qrcode'
   export default {
     name: 'PayIndex',
+    data() {
+      return {
+        payInfo: {},
+        timer: null,
+        // 支付状态码
+        code: ''
+      }
+    },
+    computed: {
+      orderId() {
+        return this.$route.query.orderId
+      }
+    },
+    mounted() { // 切记不要把async写给生命周期函数，可以把异步语句包装成函数后再在生命周期函数中调用
+      this.getPayInfo()
+    },
+    methods: {
+      // 获取支付信息
+      async getPayInfo() {
+        let result = await this.$API.reqPayInfo(this.orderId)
+        if(result.code === 200) {
+          this.payInfo = result.data
+        }
+      },
+      // 弹出框
+      async open() {
+        // 生成二维码(url地址)
+        let url = await QRCode.toDataURL(this.payInfo.codeUrl)
+        this.$alert(`<img src="${url}" />`, '请微信支付', {
+          dangerouslyUseHTMLString: true,
+          // 内容是否居中
+          center: true,
+          // 是否显示取消按钮
+          showCancelButton: true,
+          // 取消按钮文本
+          cancelButtonText: '支付遇见问题',
+          // 确认按钮文本
+          confirmButtonText: '已支付成功',
+          // 是否显示关闭按钮
+          showClose: false,
+          // 关闭弹出窗之前的回调函数
+          beforeClose: (type, instance, done) => {
+            // type：类型(确认/取消) instance：组件实例 done：关闭弹出框的函数
+            if(type == 'cancel') {
+              // 点击的是取消按钮
+              alert('请联系管理员')
+              // 清除定时器
+              clearInterval(this.timer)
+              this.timer = null
+              // 关闭弹出框
+              done()
+            } else {
+              // 点击的是确认按钮
+              // 判断是否真的支付了
+              if(this.code === 200) {
+                // 清除定时器
+                clearInterval(this.timer)
+                this.timer = null
+                // 关闭弹出框
+                done()
+                // 跳转到下一个页面
+                this.$router.push('/paysuccess')
+              }
+            }
+          }
+        })
+        if(!this.timer) {
+          // 没有定时器则开启一个新的定时器
+          this.timer = setInterval(async () => {
+            // 发送请求获取用户支付状态
+            let result = await this.$API.reqPayStatus(this.orderId)
+            if(result.code === 200) {
+              // 第一步：清除定时器
+              clearInterval(this.timer)
+              this.timer = null
+              // 第二步：保存支付成功返回的code
+              this.code = result.code
+              // 第三步：关闭弹出框
+              this.$msgbox.close()
+              // 第四步：跳转到下一个页面
+              this.$router.push('/paysuccess')
+            }
+          }, 1000)
+        }
+      }
+    }
   }
 </script>
 

@@ -33,6 +33,13 @@ export const reqLogout = () => requests({url: '/user/passport/logout', method: '
 export const reqAddressInfo = () => requests({url: '/user/userAddress/auth/findUserAddressList', method: 'get'})
 // 获取用户交易订单的接口，请求地址：/api/order/auth/trade，get方法
 export const reqOrderInfo = () => requests({url: '/order/auth/trade', method: 'get'})
+// 提交订单的接口，请求地址：/api/order/auth/submitOrder?tradeNo={tradeNo}，post方法
+export const reqSubmitOrder = (tradeNo, data) => requests({url: `/order/auth/submitOrder?tradeNo=${tradeNo}`, data, method: 'post'})
+// 获取支付信息的接口，请求地址：/api/payment/weixin/createNative/{orderId}，get方法
+export const reqPayInfo = (orderId) => requests({url: `/payment/weixin/createNative/${orderId}`, method: 'get'})
+// 获取订单支付卿凯的接口，请求地址：/api/payment/weixin/queryPayStatus/{orderId}，get方法
+export const reqPayStatus = (orderId) => requests({url: `/payment/weixin/queryPayStatus/${orderId}`, method: 'get'})
+
 
 
 // 轮播图的接口

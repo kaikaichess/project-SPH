@@ -16,6 +16,12 @@ import PaginationIndex from './components/Pagination/PaginationIndex'
 // 第一个参数是这个全局组件的名字，第二个参数是要注册的组件
 Vue.component(PaginationIndex.name, PaginationIndex)
 
+// 注册button和MessageBox element-ui组件
+import { Button, MessageBox } from 'element-ui'
+Vue.component(Button.name, Button)
+Vue.prototype.$msgbox = MessageBox
+Vue.prototype.$alert = MessageBox.alert
+
 // 引入vuex仓库store
 import store from './store/index'
 
@@ -24,6 +30,9 @@ import '../src/mock/mockServe.js'
 
 // 引入swiper样式
 import 'swiper/css/swiper.css';
+
+// 引入所有的请求数据接口
+import * as API from './api/index'
 
 Vue.config.productionTip = false
 
@@ -39,5 +48,7 @@ new Vue({
   beforeCreate() {
     // 配置全局事件总线$bus
     Vue.prototype.$bus = this
+    // 将引入的接口函数放到vm的原型对象上形成方法，便于调用
+    Vue.prototype.$API = API
   }
 }).$mount('#app')

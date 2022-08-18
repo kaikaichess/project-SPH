@@ -7,6 +7,9 @@ import DetailIndex from '../pages/Detail/DetailIndex'
 import AddCarSuccess from '../pages/AddCartSuccess/AddCartSuccess'
 import ShopCart from '../pages/ShopCart/ShopCart'
 import TradeIndex from '../pages/Trade/TradeIndex'
+import PayIndex from '../pages/Pay/PayIndex'
+import PaySuccessIndex from '../pages/PaySuccess/PaySuccessIndex'
+import CenterIndex from '../pages/Center/CenterIndex'
 
 export default [
     {
@@ -49,6 +52,21 @@ export default [
     {
         path: '/trade',
         component: TradeIndex,
+        meta: {show: true}
+    },
+    {
+        path: '/pay',
+        component: PayIndex,
+        meta: {show: true}
+    },
+    {
+        path: '/paysuccess',
+        component: PaySuccessIndex,
+        meta: {show: true}
+    },
+    {
+        path: '/center',
+        component: CenterIndex,
         meta: {show: true}
     },
     // 重定向，在项目跑起来的时候，访问/，立马定向到主页
