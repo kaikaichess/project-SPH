@@ -22,6 +22,15 @@ Vue.component(Button.name, Button)
 Vue.prototype.$msgbox = MessageBox
 Vue.prototype.$alert = MessageBox.alert
 
+// 引入图片懒加载
+import VueLazyload from 'vue-lazyload'
+// 引入懒加载图片
+import ljz from './assets/lzy.jpg'
+Vue.use(VueLazyload, {
+  // 懒加载默认图片
+  loading: ljz
+})
+
 // 引入vuex仓库store
 import store from './store/index'
 

@@ -79,8 +79,9 @@
                 try {
                     const { phone, password } = this
                     phone && password && await this.$store.dispatch('userLogin', {phone, password})
-                    // 登录成功后跳转到home首页
-                    this.$router.push('/home')
+                    let toPath = this.$route.query.redirect || '/home'
+                    // 登录成功后跳转到home首页，但是如果地址栏中携带地址，则跳转到相应的地址
+                    this.$router.push(toPath)
                 } catch (error) {
                     alert('登录失败')
                 }

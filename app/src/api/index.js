@@ -37,8 +37,10 @@ export const reqOrderInfo = () => requests({url: '/order/auth/trade', method: 'g
 export const reqSubmitOrder = (tradeNo, data) => requests({url: `/order/auth/submitOrder?tradeNo=${tradeNo}`, data, method: 'post'})
 // 获取支付信息的接口，请求地址：/api/payment/weixin/createNative/{orderId}，get方法
 export const reqPayInfo = (orderId) => requests({url: `/payment/weixin/createNative/${orderId}`, method: 'get'})
-// 获取订单支付卿凯的接口，请求地址：/api/payment/weixin/queryPayStatus/{orderId}，get方法
+// 获取订单支付的接口，请求地址：/api/payment/weixin/queryPayStatus/{orderId}，get方法
 export const reqPayStatus = (orderId) => requests({url: `/payment/weixin/queryPayStatus/${orderId}`, method: 'get'})
+// 获取订单列表的接口，请求地址：/api/order/auth/{page}/{limit}，get方法
+export const reqMyOrderList = (page, limit) => requests({url: `/order/auth/${page}/${limit}`, method: 'get'})
 
 
 

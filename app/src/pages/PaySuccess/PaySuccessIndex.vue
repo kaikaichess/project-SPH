@@ -20,6 +20,15 @@
 <script>
   export default {
     name: 'PaySuccessIndex',
+    // 组件内守卫
+    beforeRouteEnter (to, from, next) {
+      // Enter组件内守卫中不能获取组件实例'this'(因为还没有跳进组件内)
+      if(from.path == '/pay') {
+        next()
+      } else {
+        next(false)
+      }
+    }
   }
 </script>
 

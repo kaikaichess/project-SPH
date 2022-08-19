@@ -7,10 +7,10 @@
           <dl>
             <dt><i>·</i> 订单中心</dt>
             <dd>
-              我的订单
+              <router-link to="/center/myorder">我的订单</router-link>
             </dd>
             <dd>
-              团购订单
+              <router-link to="/center/group">团购订单</router-link>
             </dd>
             <dd>本地生活订单 </dd>
             <dd>我的预售</dd>
@@ -54,7 +54,8 @@
           </dl>
         </div>
         <!-- 右侧内容 -->
-        
+        <!-- 路由组件出口 -->
+        <router-view></router-view>
       </div>
     </div>
   </div>
@@ -66,7 +67,7 @@
   }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
   .order-main {
     .container {
       margin: 0 auto;
